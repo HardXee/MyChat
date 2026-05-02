@@ -3,11 +3,13 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 
 function Login() {
   const [email, SetEmail] = useState("");
   const [password, Setpassword] = useState("");
+  const Navigate = useNavigate();
 
   const handleSubmit = async () => {
     try {
@@ -24,11 +26,12 @@ function Login() {
 
       const coki = `${document.cookie}`;
       console.log(coki);
-      console.log(responce);
-
+      localStorage.setItem("username", JSON.stringify(responce.data.name));
       toast.success(responce.data.message);
+      Navigate("/chat");
     } catch (error) {
       console.log(`error is ${error}`);
+      toast.success(error.responce?.data?.message);
     }
   };
 
