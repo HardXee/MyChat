@@ -26,7 +26,7 @@ function Login() {
 
       const coki = `${document.cookie}`;
       console.log(coki);
-      localStorage.setItem("username", JSON.stringify(responce.data.name));
+      localStorage.setItem("username", responce.data.name);
       toast.success(responce.data.message);
       Navigate("/chat");
     } catch (error) {

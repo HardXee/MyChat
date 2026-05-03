@@ -1,0 +1,71 @@
+.notification-page {
+    padding: 20px;
+    min-height: 100vh;
+    background: #fff7f8;
+}
+
+.notification-page h2 {
+    margin-bottom: 20px;
+    color: #e85d75;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+/* Request Card */
+.request-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    padding: 14px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    border: 1px solid #f3c6cf;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+    transition: 0.2s;
+}
+
+.request-card:hover {
+    background: #fff1f4;
+    transform: translateY(-2px);
+}
+
+.request-card span {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Buttons */
+.request-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.accept-btn {
+    background: #e85d75;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.accept-btn:hover {
+    background: #d94b64;
+}
+
+.reject-btn {
+    background: #f8d7dd;
+    color: #e85d75;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.reject-btn:hover {
+    background: #f3c6cf;
+}
