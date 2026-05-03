@@ -4,7 +4,7 @@ class SocketService {
   constructor() {
     if (!SocketService.instance) {
       // enter your server url
-      this.socket = io("http://127.0.0.1:8000", {
+      this.socket = io("http://localhost:3000/", {
         autoconnect: false,
       });
     }
