@@ -26,8 +26,23 @@ function Chat() {
 
   const handleSearch = async () => {
     try {
+      const response = await axios.get(import.meta.env.VITE_SEARCH_USER, {
+        params: { email: search },
+        withCredentials: true,
+      });
+
+      console.log(response.data);
+      setFindUser(response.data.email);
+    } catch (error) {
+      console.log(error.response);
+      toast.error(error.response?.data);
+    }
+  };
+
+  const SendRequest = async () => {
+    try {
       const response = await axios.post(
-        "http://localhost:3000/api/request/sendRequest",
+        import.meta.env.VITE_SEND_REQUEST,
         {
           email: search,
         },
@@ -37,7 +52,6 @@ function Chat() {
       );
 
       console.log(response.data);
-      setFindUser(response.data.email);
     } catch (error) {
       console.log(error.response);
       toast.error(error.response?.data);
@@ -75,7 +89,9 @@ function Chat() {
           <div className="found-user-card">
             <div className="found-user-email">{finduser}</div>
 
-            <button className="send-request-btn">Send Request</button>
+            <button className="send-request-btn" onClick={SendRequest}>
+              Send Request
+            </button>
           </div>
         ) : (
           contacts.map((name, index) => (
