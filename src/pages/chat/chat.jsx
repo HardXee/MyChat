@@ -1,28 +1,28 @@
 import "./chat.css";
 import instance from "../../socket/socket";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 
 function Chat() {
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [count, setCount] = useState(0);
   const contacts = ["Rahul", "Priya", "Amit", "Sneha", "Karan", "Neha"];
   const [me, setMe] = useState(localStorage.getItem("username"));
   const [search, setSearch] = useState("");
   const [finduser, setFindUser] = useState("");
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
 
   const messages = [
-    // here fatch the data usign api
     { id: 1, text: "Hello", time: "10:20 AM", me: false },
     { id: 2, text: "Hi, how are you?", time: "10:21 AM", me: true },
     { id: 3, text: "I'm good", time: "10:22 AM", me: false },
   ];
 
-  function handleNotification() {
-    Navigate("/notify");
-  }
+  const handleNotification = () => {
+    navigate("/notify");
+  };
 
   const handleSearch = async () => {
     try {
@@ -31,11 +31,11 @@ function Chat() {
         withCredentials: true,
       });
 
-      console.log(response.data);
-      setFindUser(response.data.email);
+      setFindUser(response.data.email || "");
     } catch (error) {
-      console.log(error.response);
-      toast.error(error.response?.data);
+      console.log(error?.response);
+      toast.error(error?.response?.data || "User not found");
+      setFindUser("");
     }
   };
 
@@ -43,24 +43,39 @@ function Chat() {
     try {
       const response = await axios.post(
         import.meta.env.VITE_SEND_REQUEST,
-        {
-          email: search,
-        },
-        {
-          withCredentials: true,
-        },
+        { email: search },
+        { withCredentials: true },
       );
 
-      console.log(response.data);
+      toast.success(response?.data);
+      setIsDisabled(true);
     } catch (error) {
-      console.log(error.response);
-      toast.error(error.response?.data);
+      console.log(error?.response);
+      toast.error(error?.response?.data || "Request failed");
     }
   };
 
   useEffect(() => {
+    // ✅ FIXED
+    const NotificationCount = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/request/getRequestsCount",
+          { withCredentials: true },
+        );
+        console.log("working");
+        console.log(response.data);
+
+        // assuming backend returns { count: number }
+        setCount(response.data);
+      } catch (error) {
+        console.log(error?.response);
+        toast.error(error?.response?.data || "Error fetching count");
+      }
+    };
+    NotificationCount();
+    console.log("COMPONENT MOUNTED"); // 👈 check this
     instance.connect();
-    console.log(me);
   }, []);
 
   return (
@@ -71,26 +86,29 @@ function Chat() {
 
           <div className="header-actions">
             <button className="notification-btn" onClick={handleNotification}>
-              🔔
+              🔔 {count > 0 && <span className="badge">{count}</span>}
             </button>
           </div>
 
           <input
             className="search-box"
-            onChange={(e) => {
-              setSearch(e.target.value);
-            }}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search..."
           />
           <button onClick={handleSearch}>🔍</button>
         </div>
 
-        {finduser.length !== 0 ? (
+        {finduser ? (
           <div className="found-user-card">
             <div className="found-user-email">{finduser}</div>
 
-            <button className="send-request-btn" onClick={SendRequest}>
-              Send Request
+            <button
+              className="send-request-btn"
+              disabled={isDisabled}
+              onClick={SendRequest}
+            >
+              {isDisabled ? "Sent" : "Send Request"}
             </button>
           </div>
         ) : (
@@ -123,6 +141,7 @@ function Chat() {
           <button className="send-btn">Send</button>
         </div>
       </div>
+
       <Toaster />
     </div>
   );

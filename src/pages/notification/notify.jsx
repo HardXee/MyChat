@@ -1,5 +1,7 @@
 import { useState } from "react";
 import "./notify.css";
+import { useEffect } from "react";
+import axios from "axios";
 
 function Notify() {
   const requests = [
@@ -7,6 +9,8 @@ function Notify() {
     { id: 2, name: "Priya" },
     { id: 3, name: "Aman" },
   ];
+
+  useEffect(() => {});
 
   return (
     <div className="notification-page">
