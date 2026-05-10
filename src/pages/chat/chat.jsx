@@ -8,7 +8,9 @@ import axios from "axios";
 function Chat() {
   const [isDisabled, setIsDisabled] = useState(false);
   const [count, setCount] = useState(0);
-  const contacts = ["Rahul", "Priya", "Amit", "Sneha", "Karan", "Neha"];
+
+  const [friends, setFriends] = useState([]);
+
   const [me, setMe] = useState(localStorage.getItem("username"));
   const [search, setSearch] = useState("");
   const [finduser, setFindUser] = useState("");
@@ -60,7 +62,8 @@ function Chat() {
     const NotificationCount = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3000/api/request/getRequestsCount",
+          `${import.meta.env.VITE_BASE_URL}/request/getRequestsCount`,
+
           { withCredentials: true },
         );
         console.log("working");
@@ -73,7 +76,29 @@ function Chat() {
         toast.error(error?.response?.data || "Error fetching count");
       }
     };
+
+    const getFrends = async () => {
+      try {
+        const responce = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/request/getFrends`,
+          {
+            withCredentials: true,
+          },
+        );
+
+        console.log(responce.data.user.friends);
+        setFriends(responce.data.user.friends);
+
+        if (responce.status == "success") {
+          setFriends(responce.data.data.friends);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     NotificationCount();
+    getFrends();
     console.log("COMPONENT MOUNTED"); // 👈 check this
     instance.connect();
   }, []);
@@ -112,9 +137,9 @@ function Chat() {
             </button>
           </div>
         ) : (
-          contacts.map((name, index) => (
-            <div key={index} className="contact-item">
-              <strong>{name}</strong>
+          friends.map((friend) => (
+            <div key={friend._id} className="contact-item">
+              <strong>{friend.name}</strong>
               <p>Last message...</p>
             </div>
           ))
