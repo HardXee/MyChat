@@ -3,17 +3,26 @@ import instance from "../../socket/socket";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import { joinRoom } from "../../socket/chatFunctions";
+
 import axios from "axios";
 
 function Chat() {
   const [isDisabled, setIsDisabled] = useState(false);
-  const [count, setCount] = useState(0);
 
+  const [count, setCount] = useState(0);
   const [friends, setFriends] = useState([]);
 
-  const [me, setMe] = useState(localStorage.getItem("username"));
+  const [chatfriend, setChatFriend] = useState(null);
+  const [room, setRoom] = useState("");
+  const [text, setText] = useState("");
+
+  const [me] = useState(localStorage.getItem("id"));
+
   const [search, setSearch] = useState("");
+
   const [finduser, setFindUser] = useState("");
+
   const navigate = useNavigate();
 
   const messages = [
@@ -26,6 +35,26 @@ function Chat() {
     navigate("/notify");
   };
 
+  const handlesendMessage = () => {
+    const data = {
+      roomId: room,
+      sender: me,
+      receiver: chatfriend,
+      text: text,
+    };
+  };
+
+  const handlechatfriend = (e) => {
+    setChatFriend(e);
+    let myid = localStorage.getItem("id");
+    let friendid = chatfriend._id;
+    // console.log(myid, friendid);
+
+    let roomId = joinRoom(myid, friendid);
+
+    console.log(roomId);
+  };
+
   const handleSearch = async () => {
     try {
       const response = await axios.get(import.meta.env.VITE_SEARCH_USER, {
@@ -36,7 +65,9 @@ function Chat() {
       setFindUser(response.data.email || "");
     } catch (error) {
       console.log(error?.response);
+
       toast.error(error?.response?.data || "User not found");
+
       setFindUser("");
     }
   };
@@ -50,57 +81,59 @@ function Chat() {
       );
 
       toast.success(response?.data);
+
       setIsDisabled(true);
     } catch (error) {
       console.log(error?.response);
+
       toast.error(error?.response?.data || "Request failed");
     }
   };
 
   useEffect(() => {
-    // ✅ FIXED
     const NotificationCount = async () => {
       try {
         const response = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/request/getRequestsCount`,
-
-          { withCredentials: true },
+          {
+            withCredentials: true,
+          },
         );
-        console.log("working");
-        console.log(response.data);
 
-        // assuming backend returns { count: number }
         setCount(response.data);
       } catch (error) {
         console.log(error?.response);
+
         toast.error(error?.response?.data || "Error fetching count");
       }
     };
 
-    const getFrends = async () => {
+    const getFriends = async () => {
       try {
-        const responce = await axios.get(
+        const response = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/request/getFrends`,
           {
             withCredentials: true,
           },
         );
 
-        console.log(responce.data.user.friends);
-        setFriends(responce.data.user.friends);
+        console.log(response.data.user.friends);
 
-        if (responce.status == "success") {
-          setFriends(responce.data.data.friends);
-        }
+        setFriends(response.data.user.friends);
       } catch (error) {
         console.log(error);
       }
     };
 
     NotificationCount();
-    getFrends();
-    console.log("COMPONENT MOUNTED"); // 👈 check this
+
+    getFriends();
+
     instance.connect();
+
+    return () => {
+      instance.disconnect();
+    };
   }, []);
 
   return (
@@ -121,6 +154,7 @@ function Chat() {
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search..."
           />
+
           <button onClick={handleSearch}>🔍</button>
         </div>
 
@@ -138,8 +172,19 @@ function Chat() {
           </div>
         ) : (
           friends.map((friend) => (
-            <div key={friend._id} className="contact-item">
+            <div
+              key={friend._id}
+              className={
+                chatfriend?._id === friend._id
+                  ? "contact-item active"
+                  : "contact-item"
+              }
+              onClick={() => {
+                handlechatfriend(friend);
+              }}
+            >
               <strong>{friend.name}</strong>
+
               <p>Last message...</p>
             </div>
           ))
@@ -148,7 +193,7 @@ function Chat() {
 
       <div className="chat-section">
         <div className="chat-header">
-          <h3>{me}</h3>
+          <h3>{chatfriend ? chatfriend.name : "Select a friend"}</h3>
         </div>
 
         <div className="messages">
@@ -163,6 +208,7 @@ function Chat() {
 
         <div className="input-area">
           <input className="message-input" placeholder="Type a message" />
+
           <button className="send-btn">Send</button>
         </div>
       </div>
