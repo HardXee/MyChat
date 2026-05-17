@@ -32,7 +32,7 @@ function Login() {
       Navigate("/chat");
     } catch (error) {
       console.log(`error is ${error}`);
-      toast.success(error.responce?.data?.message);
+      toast.error("wrong credentials");
     }
   };
 

@@ -16,6 +16,7 @@ function Chat() {
   const [chatfriend, setChatFriend] = useState(null);
   const [room, setRoom] = useState("");
   const [text, setText] = useState("");
+  const [messages, setMessages] = useState([]);
 
   const [me] = useState(localStorage.getItem("id"));
 
@@ -25,34 +26,47 @@ function Chat() {
 
   const navigate = useNavigate();
 
-  const messages = [
-    { id: 1, text: "Hello", time: "10:20 AM", me: false },
-    { id: 2, text: "Hi, how are you?", time: "10:21 AM", me: true },
-    { id: 3, text: "I'm good", time: "10:22 AM", me: false },
-  ];
-
   const handleNotification = () => {
     navigate("/notify");
   };
 
+  const handleFetchMessages = async (roomid) => {
+    try {
+      const responce = await axios.get(
+        `http://localhost:3000/messages/getMymessages/${roomid}`,
+      );
+
+      console.log(responce);
+
+      setMessages(responce.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handlesendMessage = () => {
+    console.log("handlesendessAGE");
     const data = {
       roomId: room,
       sender: me,
       receiver: chatfriend,
       text: text,
+      createdAt: Date.now(),
     };
+    instance.emit("send_message", data);
+    setMessages((prev) => [...prev, data]);
   };
 
   const handlechatfriend = (e) => {
     setChatFriend(e);
     let myid = localStorage.getItem("id");
-    let friendid = chatfriend._id;
-    // console.log(myid, friendid);
-
+    let friendid = e._id;
+    console.log(myid, friendid);
+    setText("");
     let roomId = joinRoom(myid, friendid);
-
+    setRoom(roomId);
     console.log(roomId);
+    handleFetchMessages(roomId);
   };
 
   const handleSearch = async () => {
@@ -131,8 +145,16 @@ function Chat() {
 
     instance.connect();
 
+    const handleReceiveMessage = (message) => {
+      console.log(message);
+
+      // setMessages((prev) => [...prev, message]);
+    };
+
+    instance.on("receive_message", handleReceiveMessage);
+
     return () => {
-      instance.disconnect();
+      instance.off("receive_message", handleReceiveMessage);
     };
   }, []);
 
@@ -197,19 +219,44 @@ function Chat() {
         </div>
 
         <div className="messages">
-          {messages.map((msg) => (
-            <div key={msg.id} className={msg.me ? "message me" : "message"}>
-              <span>
-                {msg.text} <small>{msg.time}</small>
-              </span>
-            </div>
-          ))}
+          {messages.map((msg) => {
+            const isMe = msg.sender == me;
+
+            return (
+              <div key={msg._id} className={isMe ? "message me" : "message"}>
+                <span>
+                  <h4> {msg.text} </h4>
+                  <h6>
+                    {new Date(msg.createdAt).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </h6>
+                </span>
+              </div>
+            );
+          })}
         </div>
 
         <div className="input-area">
-          <input className="message-input" placeholder="Type a message" />
+          <input
+            className="message-input"
+            onChange={(e) => {
+              setText(e.target.value);
+            }}
+            value={text}
+            required
+            placeholder="Type a message"
+          />
 
-          <button className="send-btn">Send</button>
+          <button
+            className="send-btn"
+            onClick={() => {
+              handlesendMessage();
+            }}
+          >
+            Send
+          </button>
         </div>
       </div>
 
