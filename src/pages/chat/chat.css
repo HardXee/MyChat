@@ -142,6 +142,8 @@
     border-bottom: 1px solid #f3c6cf;
     font-weight: bold;
     color: #e85d75;
+    display: flex;
+    justify-content: space-between;
 }
 
 /* Messages */

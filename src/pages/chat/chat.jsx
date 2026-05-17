@@ -1,10 +1,11 @@
 import "./chat.css";
 import instance from "../../socket/socket";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { joinRoom } from "../../socket/chatFunctions";
 
+import ChatSection from "../../components/chatSection/chatSection";
 import axios from "axios";
 
 function Chat() {
@@ -21,10 +22,10 @@ function Chat() {
   const [me] = useState(localStorage.getItem("id"));
 
   const [search, setSearch] = useState("");
-
   const [finduser, setFindUser] = useState("");
 
   const navigate = useNavigate();
+  const bottomRef = useRef(null);
 
   const handleNotification = () => {
     navigate("/notify");
@@ -32,41 +33,53 @@ function Chat() {
 
   const handleFetchMessages = async (roomid) => {
     try {
-      const responce = await axios.get(
+      const response = await axios.get(
         `http://localhost:3000/messages/getMymessages/${roomid}`,
       );
 
-      console.log(responce);
-
-      setMessages(responce.data);
+      setMessages(response.data);
     } catch (error) {
       console.log(error);
     }
   };
 
   const handlesendMessage = () => {
-    console.log("handlesendessAGE");
+    if (!text.trim()) return;
+
+    if (!chatfriend) return;
+
     const data = {
       roomId: room,
       sender: me,
-      receiver: chatfriend,
+      receiver: chatfriend._id,
       text: text,
       createdAt: Date.now(),
     };
+
     instance.emit("send_message", data);
-    setMessages((prev) => [...prev, data]);
+
+    setText("");
   };
 
-  const handlechatfriend = (e) => {
-    setChatFriend(e);
-    let myid = localStorage.getItem("id");
-    let friendid = e._id;
-    console.log(myid, friendid);
-    setText("");
-    let roomId = joinRoom(myid, friendid);
+  const handlechatfriend = async (friend) => {
+    setChatFriend(friend);
+
+    const myid = localStorage.getItem("id");
+    const friendid = friend._id;
+
+    const roomId = joinRoom(myid, friendid);
+
     setRoom(roomId);
-    console.log(roomId);
-    handleFetchMessages(roomId);
+
+    setText("");
+
+    await handleFetchMessages(roomId);
+
+    setTimeout(() => {
+      bottomRef.current?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 100);
   };
 
   const handleSearch = async () => {
@@ -104,6 +117,7 @@ function Chat() {
     }
   };
 
+  // fetch notification + friends
   useEffect(() => {
     const NotificationCount = async () => {
       try {
@@ -131,8 +145,6 @@ function Chat() {
           },
         );
 
-        console.log(response.data.user.friends);
-
         setFriends(response.data.user.friends);
       } catch (error) {
         console.log(error);
@@ -140,15 +152,27 @@ function Chat() {
     };
 
     NotificationCount();
-
     getFriends();
+  }, []);
 
+  // socket connection
+  useEffect(() => {
     instance.connect();
 
+    return () => {
+      instance.disconnect();
+    };
+  }, []);
+
+  // receive message listener
+  useEffect(() => {
     const handleReceiveMessage = (message) => {
       console.log(message);
 
-      // setMessages((prev) => [...prev, message]);
+      // only append if current room
+      if (message.roomId === room) {
+        setMessages((prev) => [...prev, message]);
+      }
     };
 
     instance.on("receive_message", handleReceiveMessage);
@@ -156,7 +180,14 @@ function Chat() {
     return () => {
       instance.off("receive_message", handleReceiveMessage);
     };
-  }, []);
+  }, [room]);
+
+  // auto scroll
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [messages]);
 
   return (
     <div className="chat-app">
@@ -201,9 +232,7 @@ function Chat() {
                   ? "contact-item active"
                   : "contact-item"
               }
-              onClick={() => {
-                handlechatfriend(friend);
-              }}
+              onClick={() => handlechatfriend(friend)}
             >
               <strong>{friend.name}</strong>
 
@@ -213,52 +242,15 @@ function Chat() {
         )}
       </div>
 
-      <div className="chat-section">
-        <div className="chat-header">
-          <h3>{chatfriend ? chatfriend.name : "Select a friend"}</h3>
-        </div>
-
-        <div className="messages">
-          {messages.map((msg) => {
-            const isMe = msg.sender == me;
-
-            return (
-              <div key={msg._id} className={isMe ? "message me" : "message"}>
-                <span>
-                  <h4> {msg.text} </h4>
-                  <h6>
-                    {new Date(msg.createdAt).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </h6>
-                </span>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="input-area">
-          <input
-            className="message-input"
-            onChange={(e) => {
-              setText(e.target.value);
-            }}
-            value={text}
-            required
-            placeholder="Type a message"
-          />
-
-          <button
-            className="send-btn"
-            onClick={() => {
-              handlesendMessage();
-            }}
-          >
-            Send
-          </button>
-        </div>
-      </div>
+      <ChatSection
+        chatfriend={chatfriend}
+        messages={messages}
+        me={me}
+        text={text}
+        setText={setText}
+        handlesendMessage={handlesendMessage}
+        bottomRef={bottomRef}
+      />
 
       <Toaster />
     </div>
