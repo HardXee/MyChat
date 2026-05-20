@@ -13,11 +13,14 @@ function Chat() {
 
   const [count, setCount] = useState(0);
   const [friends, setFriends] = useState([]);
+  const [friendsMap, setFriendsMap] = useState({});
 
   const [chatfriend, setChatFriend] = useState(null);
   const [room, setRoom] = useState("");
   const [text, setText] = useState("");
   const [messages, setMessages] = useState([]);
+  const [updated, setupdatedAt] = useState("");
+  const [scrollTop, setScrollTop] = useState(false);
 
   const [me] = useState(localStorage.getItem("id"));
 
@@ -31,16 +34,28 @@ function Chat() {
     navigate("/notify");
   };
 
-  const handleFetchMessages = async (roomid) => {
+  const handleFetchMessages = async (roomid, updatedat) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/messages/getMymessages/${roomid}`,
+        `http://localhost:3000/messages/getMymessages/${roomid}/${updatedat}`,
       );
 
       setMessages(response.data);
     } catch (error) {
-      console.log(error);
+      console.log(error.response);
     }
+  };
+
+  const fetchOlderMessages = async () => {
+    if (messages.length === 0) return;
+
+    const oldestMessage = messages[0];
+    console.log(oldestMessage);
+    // const response = await axios.get(
+    //  `http://localhost:3000/messages/getMymessages/${room}/${oldestMessage.createdAt}`,
+    // );
+
+    //  setMessages((prev) => [...response.data, ...prev]);
   };
 
   const handlesendMessage = () => {
@@ -61,9 +76,10 @@ function Chat() {
     setText("");
   };
 
-  const handlechatfriend = async (friend) => {
+  const handlechatfriend = async (friend, e) => {
     setChatFriend(friend);
 
+    console.log(e);
     const myid = localStorage.getItem("id");
     const friendid = friend._id;
 
@@ -73,7 +89,7 @@ function Chat() {
 
     setText("");
 
-    await handleFetchMessages(roomId);
+    await handleFetchMessages(roomId, e);
 
     setTimeout(() => {
       bottomRef.current?.scrollIntoView({
@@ -145,6 +161,8 @@ function Chat() {
           },
         );
 
+        console.log(response.data);
+        setFriendsMap(response?.data?.friendsMap);
         setFriends(response.data.user.friends);
       } catch (error) {
         console.log(error);
@@ -232,11 +250,13 @@ function Chat() {
                   ? "contact-item active"
                   : "contact-item"
               }
-              onClick={() => handlechatfriend(friend)}
+              onClick={() =>
+                handlechatfriend(friend, friendsMap[friend._id].updatedAt)
+              }
             >
               <strong>{friend.name}</strong>
 
-              <p>Last message...</p>
+              <p>{friendsMap[friend._id].lastmessage}</p>
             </div>
           ))
         )}
@@ -244,12 +264,15 @@ function Chat() {
 
       <ChatSection
         chatfriend={chatfriend}
+        setupdatedAt={setupdatedAt}
         messages={messages}
         me={me}
         text={text}
         setText={setText}
         handlesendMessage={handlesendMessage}
         bottomRef={bottomRef}
+        fetchOlderMessages={fetchOlderMessages}
+        setScrollTop
       />
 
       <Toaster />

@@ -1,4 +1,5 @@
 import "./chatSection.css";
+import React, { useState, useRef } from "react";
 
 function ChatSection({
   chatfriend,
@@ -8,7 +9,20 @@ function ChatSection({
   setText,
   handlesendMessage,
   bottomRef,
+  fetchOlderMessages,
 }) {
+  const scrollDemoRef = useRef(null);
+
+  const handleScroll = () => {
+    if (scrollDemoRef.current) {
+      const { scrollTop } = scrollDemoRef.current;
+      // console.log(scrollTop);
+      if (scrollTop == 0) {
+        fetchOlderMessages();
+      }
+    }
+  };
+
   return (
     <div className="chat-section">
       <div className="chat-header">
@@ -17,23 +31,25 @@ function ChatSection({
         <button>send location</button>
       </div>
 
-      <div className="messages">
-        {messages.map((msg) => {
+      <div className="messages" onScroll={handleScroll} ref={scrollDemoRef}>
+        {messages.map((msg, index) => {
           const isMe = msg.sender == me;
 
           return (
             <div
-              key={msg._id || Math.random()}
+              key={msg._id || index}
               className={isMe ? "message me" : "message"}
             >
               <span>
                 <h4>{msg.text}</h4>
 
                 <h6>
-                  {new Date(msg.createdAt).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  {msg.createdAt
+                    ? new Date(msg.createdAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : ""}
                 </h6>
               </span>
             </div>
