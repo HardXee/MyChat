@@ -41,6 +41,21 @@ function Chat() {
       );
 
       setMessages(response.data);
+      bottomRef.current?.scrollIntoView({
+        behavior: "smooth",
+      });
+    } catch (error) {
+      console.log(error.response);
+    }
+  };
+
+  const handlOlderMessages = async (roomid, updatedat) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/messages/getMymessages/${roomid}/${updatedat}`,
+      );
+      //setMessages(response.data);
+      setMessages((prev) => [...response.data, ...prev]);
     } catch (error) {
       console.log(error.response);
     }
@@ -50,7 +65,9 @@ function Chat() {
     if (messages.length === 0) return;
 
     const oldestMessage = messages[0];
-    console.log(oldestMessage);
+
+    handlOlderMessages(oldestMessage.roomId, oldestMessage.createdAt);
+    console.log(oldestMessage.roomId, oldestMessage.createdAt);
     // const response = await axios.get(
     //  `http://localhost:3000/messages/getMymessages/${room}/${oldestMessage.createdAt}`,
     // );
@@ -205,7 +222,7 @@ function Chat() {
     bottomRef.current?.scrollIntoView({
       behavior: "smooth",
     });
-  }, [messages]);
+  }, []);
 
   return (
     <div className="chat-app">

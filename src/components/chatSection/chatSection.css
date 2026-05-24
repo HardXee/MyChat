@@ -6,6 +6,7 @@
     background-color: #fff7f8;
     height: 100vh;
     overflow: hidden;
+    position: relative;
 }
 
 /* Header */
@@ -162,4 +163,25 @@
 
 .send-btn:hover {
     background-color: #d94b64;
+}
+
+.chat-section {
+    position: relative;
+}
+
+.scroll-down-btn {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+
+    z-index: 10;
 }

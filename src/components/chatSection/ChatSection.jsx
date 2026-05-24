@@ -1,5 +1,7 @@
+import axios from "axios";
 import "./chatSection.css";
 import React, { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 function ChatSection({
   chatfriend,
@@ -12,6 +14,29 @@ function ChatSection({
   fetchOlderMessages,
 }) {
   const scrollDemoRef = useRef(null);
+  const Navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/auth/logOut",
+        {},
+        {
+          withCredentials: true,
+        },
+      );
+
+      console.log(response.data);
+      if (response.data.status == "success") {
+        localStorage.removeItem("id");
+        localStorage.removeItem("username");
+
+        Navigate("/login");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleScroll = () => {
     if (scrollDemoRef.current) {
@@ -28,7 +53,9 @@ function ChatSection({
       <div className="chat-header">
         <h3>{chatfriend ? chatfriend.name : "Select a friend"}</h3>
 
-        <button>send location</button>
+        <button disabled>send location</button>
+
+        <button onClick={handleLogout}>Log Out</button>
       </div>
 
       <div className="messages" onScroll={handleScroll} ref={scrollDemoRef}>
@@ -58,6 +85,17 @@ function ChatSection({
 
         <div ref={bottomRef}></div>
       </div>
+
+      <button
+        className="scroll-down-btn"
+        onClick={() => {
+          bottomRef.current?.scrollIntoView({
+            behavior: "smooth",
+          });
+        }}
+      >
+        ↓
+      </button>
 
       <div className="input-area">
         <input
