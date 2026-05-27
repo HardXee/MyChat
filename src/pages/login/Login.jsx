@@ -39,38 +39,46 @@ function Login() {
   return (
     <div className="login-page">
       <div className="form">
-        <input
-          type="text"
-          value={email}
-          placeholder="username"
-          onChange={(e) => {
-            SetEmail(e.target.value);
-          }}
-        />
-        <input
-          type="password"
-          vlaue={password}
-          placeholder="password"
-          onChange={(e) => {
-            Setpassword(e.target.value);
-          }}
-        />
-        <button
-          onClick={() => {
-            handleSubmit();
-            console.log(" puni puni working ");
-          }}
-        >
-          login
-        </button>
-        <p className="message">
-          forgot password? <Link to="/forgot_password">Forgot Password</Link>
-        </p>
-        <p className="message">
-          Not registered? <Link to="/register">Create an account</Link>
-        </p>
+        <fieldset>
+          <legend>Welcome again!</legend>
+
+          <input
+            type="text"
+            value={email}
+            placeholder="username"
+            onChange={(e) => {
+              SetEmail(e.target.value);
+            }}
+          />
+
+          <input
+            type="password"
+            value={password}
+            placeholder="password"
+            onChange={(e) => {
+              Setpassword(e.target.value);
+            }}
+          />
+
+          <button
+            onClick={() => {
+              handleSubmit();
+            }}
+          >
+            Login
+          </button>
+
+          <p className="message">
+            Forgot password? <Link to="/forgot_password">Forgot Password</Link>
+          </p>
+
+          <p className="message">
+            Not registered? <Link to="/register">Create an account</Link>
+          </p>
+        </fieldset>
+
+        <Toaster />
       </div>
-      <Toaster />
     </div>
   );
 }

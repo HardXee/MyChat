@@ -1,6 +1,6 @@
 import axios from "axios";
 import "./chatSection.css";
-import React, { useState, useRef } from "react";
+import React, { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 function ChatSection({
@@ -14,7 +14,8 @@ function ChatSection({
   fetchOlderMessages,
 }) {
   const scrollDemoRef = useRef(null);
-  const Navigate = useNavigate();
+
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
@@ -27,11 +28,12 @@ function ChatSection({
       );
 
       console.log(response.data);
-      if (response.data.status == "success") {
+
+      if (response.data.status === "success") {
         localStorage.removeItem("id");
         localStorage.removeItem("username");
 
-        Navigate("/login");
+        navigate("/login");
       }
     } catch (error) {
       console.log(error);
@@ -39,28 +41,44 @@ function ChatSection({
   };
 
   const handleScroll = () => {
-    if (scrollDemoRef.current) {
-      const { scrollTop } = scrollDemoRef.current;
-      // console.log(scrollTop);
-      if (scrollTop == 0) {
-        fetchOlderMessages();
-      }
+    if (!scrollDemoRef.current) return;
+
+    const { scrollTop } = scrollDemoRef.current;
+
+    if (scrollTop <= 0) {
+      fetchOlderMessages();
     }
+  };
+
+  const handleSend = () => {
+    if (!text.trim()) return;
+
+    handlesendMessage();
   };
 
   return (
     <div className="chat-section">
+      {/* HEADER */}
+
       <div className="chat-header">
         <h3>{chatfriend ? chatfriend.name : "Select a friend"}</h3>
 
-        <button disabled>send location</button>
+        <div>
+          <button type="button" disabled>
+            Send Location
+          </button>
 
-        <button onClick={handleLogout}>Log Out</button>
+          <button type="button" onClick={handleLogout}>
+            Log Out
+          </button>
+        </div>
       </div>
+
+      {/* MESSAGES */}
 
       <div className="messages" onScroll={handleScroll} ref={scrollDemoRef}>
         {messages.map((msg, index) => {
-          const isMe = msg.sender == me;
+          const isMe = msg.sender === me;
 
           return (
             <div
@@ -86,7 +104,10 @@ function ChatSection({
         <div ref={bottomRef}></div>
       </div>
 
+      {/* SCROLL BUTTON */}
+
       <button
+        type="button"
         className="scroll-down-btn"
         onClick={() => {
           bottomRef.current?.scrollIntoView({
@@ -97,28 +118,26 @@ function ChatSection({
         ↓
       </button>
 
+      {/* INPUT AREA */}
+
       <div className="input-area">
         <input
           className="message-input"
-          onChange={(e) => {
-            setText(e.target.value);
-          }}
+          type="text"
           value={text}
           required
           placeholder="Type a message"
+          onChange={(e) => {
+            setText(e.target.value);
+          }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              handlesendMessage();
+              handleSend();
             }
           }}
         />
 
-        <button
-          className="send-btn"
-          onClick={() => {
-            handlesendMessage();
-          }}
-        >
+        <button type="button" className="send-btn" onClick={handleSend}>
           Send
         </button>
       </div>

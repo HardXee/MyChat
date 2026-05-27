@@ -20,7 +20,6 @@ function Chat() {
   const [text, setText] = useState("");
   const [messages, setMessages] = useState([]);
   const [updated, setupdatedAt] = useState("");
-  const [scrollTop, setScrollTop] = useState(false);
 
   const [me] = useState(localStorage.getItem("id"));
 
@@ -29,6 +28,8 @@ function Chat() {
 
   const navigate = useNavigate();
   const bottomRef = useRef(null);
+
+  const flag = useRef(false);
 
   const handleNotification = () => {
     navigate("/notify");
@@ -51,6 +52,7 @@ function Chat() {
 
   const handlOlderMessages = async (roomid, updatedat) => {
     try {
+      flag.current = true;
       const response = await axios.get(
         `http://localhost:3000/messages/getMymessages/${roomid}/${updatedat}`,
       );
@@ -219,10 +221,14 @@ function Chat() {
 
   // auto scroll
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({
-      behavior: "smooth",
-    });
-  }, []);
+    // console.log(flag);
+    if (flag.current == false) {
+      bottomRef.current?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }
+    flag.current = false;
+  }, [messages]);
 
   return (
     <div className="chat-app">

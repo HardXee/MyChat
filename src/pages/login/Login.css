@@ -1,75 +1,92 @@
-@import url("https://fonts.googleapis.com/css?family=Roboto:300");
+/* login.css */
 
-body {
-    background: #e85d75;
-
-    font-family: "Roboto", sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 .login-page {
-    width: 360px;
-    padding-top: 8%;
-    margin: auto;
+    width: 100%;
+    height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    padding: 5px;
 }
 
 .form {
-    position: relative;
-    z-index: 1;
-    background: #f5fbef;
-    max-width: 360px;
-    margin: 0 auto 100px;
-    padding: 45px;
-    text-align: center;
-    box-shadow:
-        0 0 20px rgba(0, 0, 0, 0.2),
-        0 5px 5px rgba(0, 0, 0, 0.24);
+    width: 100%;
+    max-width: 320px;
+    background: #eef2ff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    padding: 25px;
+}
+
+.form fieldset {
+    border: 3px dashed #6366f1;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.form legend {
+    padding: 0 10px;
+    font-style: italic;
+    color: #4f46e5;
+    font-weight: bold;
 }
 
 .form input {
-    font-family: "Roboto", sans-serif;
-    outline: none;
-    background: #f2f2f2;
     width: 100%;
+    padding: 12px;
+    margin-top: 12px;
+    margin-bottom: 14px;
     border: none;
-    margin-bottom: 15px;
-    padding: 15px;
-    box-sizing: border-box;
+    outline: none;
+    border-radius: 6px;
+    background: white;
     font-size: 14px;
+    transition: 0.2s;
+}
+
+.form input:focus {
+    box-shadow: 0 0 0 2px #6366f1;
 }
 
 .form button {
-    font-family: "Roboto", sans-serif;
-    text-transform: uppercase;
-    outline: none;
-    background: #4caf50;
     width: 100%;
+    padding: 12px;
     border: none;
-    padding: 15px;
+    border-radius: 6px;
+    background: #6366f1;
     color: white;
-    font-size: 14px;
+    font-weight: bold;
+    font-size: 15px;
     cursor: pointer;
-    transition: 0.3s ease;
+    transition: 0.2s;
+    margin-top: 10px;
 }
 
-.form button:hover,
-.form button:focus,
-.form button:active {
-    background: #43a047;
+.form button:hover {
+    background: #4f46e5;
 }
 
 .message {
-    margin-top: 15px;
-    color: #b3b3b3;
-    font-size: 12px;
+    margin-top: 14px;
+    font-size: 13px;
+    text-align: center;
+    color: #555;
 }
 
 .message a {
-    color: #4caf50;
+    color: #4f46e5;
     text-decoration: none;
+    font-weight: bold;
 }
 
-.register-form {
-    display: none;
+.message a:hover {
+    text-decoration: underline;
 }
