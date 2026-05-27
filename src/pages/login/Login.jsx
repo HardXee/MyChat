@@ -64,6 +64,9 @@ function Login() {
           login
         </button>
         <p className="message">
+          forgot password? <Link to="/forgot_password">Forgot Password</Link>
+        </p>
+        <p className="message">
           Not registered? <Link to="/register">Create an account</Link>
         </p>
       </div>

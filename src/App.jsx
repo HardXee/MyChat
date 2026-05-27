@@ -5,6 +5,10 @@ import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 import Chat from "./pages/chat/chat";
 import Notify from "./pages/notification/notify";
+
+import ForgotPassword from "./pages/forgotPassword/forgotpassword";
+import ResetPassword from "./pages/resetPassword/resetPassword";
+
 function App() {
   return (
     <BrowserRouter>
@@ -14,6 +18,9 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/notify" element={<Notify />} />
+
+        <Route path="/forgot_password" element={<ForgotPassword />} />
+        <Route path="/reset_password/:id/:token" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
   );
