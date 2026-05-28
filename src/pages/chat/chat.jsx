@@ -41,7 +41,7 @@ function Chat() {
         `http://localhost:3000/messages/getMymessages/${roomid}/${updatedat}`,
       );
 
-      setMessages(response.data);
+      setMessages(response.data || []);
       bottomRef.current?.scrollIntoView({
         behavior: "smooth",
       });
@@ -97,7 +97,7 @@ function Chat() {
 
   const handlechatfriend = async (friend, e) => {
     setChatFriend(friend);
-
+    setMessages([]);
     console.log(e);
     const myid = localStorage.getItem("id");
     const friendid = friend._id;
@@ -119,6 +119,7 @@ function Chat() {
 
   const handleSearch = async () => {
     try {
+      if (search.length == 0) return;
       const response = await axios.get(import.meta.env.VITE_SEARCH_USER, {
         params: { email: search },
         withCredentials: true,
@@ -243,6 +244,7 @@ function Chat() {
           </div>
 
           <input
+            required
             className="search-box"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
