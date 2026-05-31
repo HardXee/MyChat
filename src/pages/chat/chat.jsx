@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { joinRoom } from "../../socket/chatFunctions";
 
-import ChatSection from "../../components/chatSection/chatSection";
+import ChatSection from "../../components/chatSection/chatSection.jsx";
 import axios from "axios";
 
 function Chat() {
