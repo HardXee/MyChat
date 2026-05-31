@@ -38,7 +38,7 @@ function Chat() {
   const handleFetchMessages = async (roomid, updatedat) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/messages/getMymessages/${roomid}/${updatedat}`,
+        import.meta.env.VITE_MY_MESSAGES + roomid + "/" + updatedat,
       );
 
       setMessages(response.data || []);
@@ -54,7 +54,7 @@ function Chat() {
     try {
       flag.current = true;
       const response = await axios.get(
-        `http://localhost:3000/messages/getMymessages/${roomid}/${updatedat}`,
+        import.meta.env.VITE_MY_MESSAGES + roomid + "/" + updatedat,
       );
       //setMessages(response.data);
       setMessages((prev) => [...response.data, ...prev]);
