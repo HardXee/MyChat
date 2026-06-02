@@ -1,39 +1,37 @@
 import "./Login.css";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 
 function Login() {
   const [email, SetEmail] = useState("");
   const [password, Setpassword] = useState("");
   const Navigate = useNavigate();
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (emailArg = email, passwordArg = password) => {
     try {
-      console.log(import.meta.env.VITE_BASE_URL + "api/auth/login");
-      const responce = await axios.post(
+      const response = await axios.post(
         import.meta.env.VITE_BASE_URL + "api/auth/login",
         {
-          email: email,
-          password: password,
+          email: emailArg,
+          password: passwordArg,
         },
         {
           withCredentials: true,
         },
       );
 
-      const coki = `${document.cookie}`;
-      console.log(coki);
-      localStorage.setItem("username", responce.data.name);
-      localStorage.setItem("id", responce.data.id);
-      toast.success(responce.data.message);
-      Navigate("/chat");
+      localStorage.setItem("username", response.data.name);
+      localStorage.setItem("id", response.data.id);
+
+      setTimeout(() => {
+        Navigate("/chat");
+        toast.success(response.data.message);
+      }, 250);
     } catch (error) {
       console.log(error.response?.data);
-      toast.error(error.response?.data);
+      toast.error(error.response?.data || "Login failed");
     }
   };
 
@@ -46,7 +44,7 @@ function Login() {
           <input
             type="text"
             value={email}
-            placeholder="username"
+            placeholder="Email"
             onChange={(e) => {
               SetEmail(e.target.value);
             }}
@@ -55,19 +53,36 @@ function Login() {
           <input
             type="password"
             value={password}
-            placeholder="password"
+            placeholder="Password"
             onChange={(e) => {
               Setpassword(e.target.value);
             }}
           />
 
-          <button
-            onClick={() => {
-              handleSubmit();
+          <button onClick={() => handleSubmit()}>Login</button>
+
+          {/* Guest Login Buttons */}
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              marginTop: "10px",
             }}
           >
-            Login
-          </button>
+            <button
+              type="button"
+              onClick={() => handleSubmit("Guest1@gmail.com", "123456")}
+            >
+              Guest 1
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleSubmit("Guest2@gmail.com", "123456")}
+            >
+              Guest 2
+            </button>
+          </div>
 
           <p className="message">
             Forgot password? <Link to="/forgot_password">Forgot Password</Link>
