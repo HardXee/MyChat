@@ -14,11 +14,14 @@ function Register() {
 
   const handleSubmit = async () => {
     try {
-      const responce = await axios.post(import.meta.env.VITE_REGISTER_URL, {
-        name: name,
-        email: email,
-        password: password,
-      });
+      const responce = await axios.post(
+        import.meta.env.VITE_BASE_URL + "api/auth/register",
+        {
+          name: name,
+          email: email,
+          password: password,
+        },
+      );
       toast.success(responce.data.message);
       console.log(responce);
       Navigate("/login");

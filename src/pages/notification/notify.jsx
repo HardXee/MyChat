@@ -12,20 +12,20 @@ function Notify() {
   const handleAcceptRequest = async (e) => {
     try {
       const responce = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/request/acceptRequest/${e}`,
+        `${import.meta.env.VITE_BASE_URL}api/request/acceptRequest/${e}`,
         {}, // empty body
         {
           withCredentials: true,
         },
       );
 
-      console.log(responce.data);
+      // console.log(responce.data);
       if (responce.data.status == "success") {
         toast.success(responce.data.message);
         Navigate("/chat");
       }
     } catch (error) {
-      console.log(error);
+      //  console.log(error);
     }
   };
 

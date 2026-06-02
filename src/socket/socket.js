@@ -4,7 +4,8 @@ class SocketService {
   constructor() {
     if (!SocketService.instance) {
       // enter your server url
-      this.socket = io("http://localhost:3000/", {
+      // http://localhost:3000/
+      this.socket = io(import.meta.env.VITE_BASE_URL, {
         autoconnect: false,
       });
     }

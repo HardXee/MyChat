@@ -38,7 +38,11 @@ function Chat() {
   const handleFetchMessages = async (roomid, updatedat) => {
     try {
       const response = await axios.get(
-        import.meta.env.VITE_MY_MESSAGES + roomid + "/" + updatedat,
+        import.meta.env.VITE_BASE_URL +
+          "api/messages/getMymessages/" +
+          roomid +
+          "/" +
+          updatedat,
       );
 
       setMessages(response.data || []);
@@ -54,7 +58,11 @@ function Chat() {
     try {
       flag.current = true;
       const response = await axios.get(
-        import.meta.env.VITE_MY_MESSAGES + roomid + "/" + updatedat,
+        import.meta.env.VITE_BASE_URL +
+          "api/messages/getMymessages/" +
+          roomid +
+          "/" +
+          updatedat,
       );
       //setMessages(response.data);
       setMessages((prev) => [...response.data, ...prev]);
@@ -120,10 +128,13 @@ function Chat() {
   const handleSearch = async () => {
     try {
       if (search.length == 0) return;
-      const response = await axios.get(import.meta.env.VITE_SEARCH_USER, {
-        params: { email: search },
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        import.meta.env.VITE_BASE_URL + "api/request/searchUser",
+        {
+          params: { email: search },
+          withCredentials: true,
+        },
+      );
 
       setFindUser(response.data.email || "");
     } catch (error) {
@@ -138,7 +149,7 @@ function Chat() {
   const SendRequest = async () => {
     try {
       const response = await axios.post(
-        import.meta.env.VITE_SEND_REQUEST,
+        import.meta.env.VITE_BASE_URL + "api/request/sendRequest",
         { email: search },
         { withCredentials: true },
       );
@@ -158,15 +169,16 @@ function Chat() {
     const NotificationCount = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/request/getRequestsCount`,
+          `${import.meta.env.VITE_BASE_URL}api/request/getRequestsCount`,
           {
             withCredentials: true,
           },
         );
 
         setCount(response.data);
+        // console.log(response.data);
       } catch (error) {
-        console.log(error?.response);
+        // console.log(error?.response);
 
         toast.error(error?.response?.data || "Error fetching count");
       }
@@ -175,13 +187,13 @@ function Chat() {
     const getFriends = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/request/getFrends`,
+          `${import.meta.env.VITE_BASE_URL}api/request/getFrends`,
           {
             withCredentials: true,
           },
         );
 
-        console.log(response.data);
+        // console.log(response.data);
         setFriendsMap(response?.data?.friendsMap);
         setFriends(response.data.user.friends);
       } catch (error) {
@@ -205,7 +217,7 @@ function Chat() {
   // receive message listener
   useEffect(() => {
     const handleReceiveMessage = (message) => {
-      console.log(message);
+      //   console.log(message);
 
       // only append if current room
       if (message.roomId === room) {

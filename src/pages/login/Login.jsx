@@ -13,8 +13,9 @@ function Login() {
 
   const handleSubmit = async () => {
     try {
+      console.log(import.meta.env.VITE_BASE_URL + "api/auth/login");
       const responce = await axios.post(
-        import.meta.env.VITE_LOGIN_URL,
+        import.meta.env.VITE_BASE_URL + "api/auth/login",
         {
           email: email,
           password: password,
@@ -31,8 +32,8 @@ function Login() {
       toast.success(responce.data.message);
       Navigate("/chat");
     } catch (error) {
-      console.log(`error is ${error}`);
-      toast.error("wrong credentials");
+      console.log(error.response?.data);
+      toast.error(error.response?.data);
     }
   };
 

@@ -20,7 +20,7 @@ function ChatSection({
   const handleLogout = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/auth/logOut",
+        import.meta.env.VITE_BASE_URL + "/auth/logOut",
         {},
         {
           withCredentials: true,
