@@ -9,9 +9,9 @@ function Home() {
       <div className="hero">
         <div className="hero-content">
           <h1>
-            For Every Conversation That Matters.
+            Every Conversation.
             <br />
-            Private. Secure. Yours.
+            Only Between You Two. 🔒💕
           </h1>
 
           <p>
