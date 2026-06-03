@@ -184,15 +184,11 @@ function Chat() {
         );
 
         setCount(response.data);
+        // console.log(response.data);
       } catch (error) {
-        console.log(error?.response);
+        // console.log(error?.response);
 
-        const message =
-          typeof error?.response?.data === "string"
-            ? error.response.data
-            : error?.response?.data?.message || "Error fetching count";
-
-        toast.error(message);
+        toast.error(error?.response?.data || "Error fetching count");
       }
     };
 
@@ -206,7 +202,7 @@ function Chat() {
         );
 
         // console.log(response.data);
-        // setFriendsMap(response?.data?.friendsMap);
+        setFriendsMap(response?.data?.friendsMap);
         setFriends(response.data?.user?.friends);
       } catch (error) {
         console.log(error);
