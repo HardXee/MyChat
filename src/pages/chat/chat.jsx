@@ -202,8 +202,8 @@ function Chat() {
         );
 
         // console.log(response.data);
-        setFriendsMap(response?.data?.friendsMap);
-        setFriends(response.data.user.friends);
+        // setFriendsMap(response?.data?.friendsMap);
+        setFriends(response.data?.user?.friends);
       } catch (error) {
         console.log(error);
       }
