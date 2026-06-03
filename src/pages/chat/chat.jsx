@@ -184,11 +184,15 @@ function Chat() {
         );
 
         setCount(response.data);
-        // console.log(response.data);
       } catch (error) {
-        // console.log(error?.response);
+        console.log(error?.response);
 
-        toast.error(error?.response?.data || "Error fetching count");
+        const message =
+          typeof error?.response?.data === "string"
+            ? error.response.data
+            : error?.response?.data?.message || "Error fetching count";
+
+        toast.error(message);
       }
     };
 
