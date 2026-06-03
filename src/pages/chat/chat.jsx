@@ -140,7 +140,11 @@ function Chat() {
     } catch (error) {
       console.log(error?.response);
 
-      toast.error(error?.response?.data || "User not found");
+      toast.error(
+        error?.response?.data?.message ||
+          error?.response?.data ||
+          "Something went wrong",
+      );
 
       setFindUser("");
     }
@@ -154,13 +158,17 @@ function Chat() {
         { withCredentials: true },
       );
 
-      toast.success(response?.data);
+      toast.success(response?.data?.message || response?.data || "Success");
 
       setIsDisabled(true);
     } catch (error) {
       console.log(error?.response);
 
-      toast.error(error?.response?.data || "Request failed");
+      toast.error(
+        error?.response?.data?.message ||
+          error?.response?.data ||
+          "Request failed",
+      );
     }
   };
 
@@ -288,12 +296,12 @@ function Chat() {
                   : "contact-item"
               }
               onClick={() =>
-                handlechatfriend(friend, friendsMap[friend._id].updatedAt)
+                handlechatfriend(friend, friendsMap?.[friend._id]?.updatedAt)
               }
             >
               <strong>{friend.name}</strong>
 
-              <p>{friendsMap[friend._id].lastmessage}</p>
+              <p>{friendsMap?.[friend._id]?.lastmessage || ""}</p>
             </div>
           ))
         )}

@@ -22,12 +22,12 @@ function Login() {
         },
       );
 
-      localStorage.setItem("username", response.data.name);
-      localStorage.setItem("id", response.data.id);
+      localStorage.setItem("username", response.data?.name);
+      localStorage.setItem("id", response.data?.id);
 
       setTimeout(() => {
         Navigate("/chat");
-        toast.success(response.data.message);
+        toast.success(response.data?.message);
       }, 250);
     } catch (error) {
       console.log(error.response?.data);
