@@ -9,9 +9,9 @@ function Home() {
       <div className="hero">
         <div className="hero-content">
           <h1>
-            Chat Freely.
+            For Every Conversation That Matters.
             <br />
-            Love Privately.
+            Private. Secure. Yours.
           </h1>
 
           <p>
